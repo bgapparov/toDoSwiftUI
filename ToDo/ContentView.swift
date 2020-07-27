@@ -17,6 +17,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView{
             List{
+                //MARK: - FirstSection
                 Section(header: Text("What is next?")){
                     HStack{
                         TextField("New item", text: self.$newToDoItem)
@@ -40,8 +41,24 @@ struct ContentView: View {
                     }
                 }.font(.headline)
                 
+                //MARK: - SecondSection
+                Section(header: Text("To Do's")){
+                   ForEach(self.toDoItems) { todoItem in
+                    ToDOItemView(title: todoItem.title!, createdAt: "\(todoItem.createdAt!)")
+                   }.onDelete{ indexSet in
+                    let deleteItem = self.toDoItems[indexSet.first!]
+                    self.managedObjectContex.delete(deleteItem)
+                    
+                    do {
+                        try self.managedObjectContex.save()
+                    }catch{
+                        print(error)
+                    }
+                    
+                    }
+            }
             }.navigationBarTitle("My list")
-            .navigationBarItems(trailing: EditButton())
+                .navigationBarItems(trailing: EditButton())
         }
     }
 }
